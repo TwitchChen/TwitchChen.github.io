@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="ansible," />
 
 
 
@@ -81,13 +81,18 @@
 
 
 
-<meta property="og:type" content="website">
-<meta property="og:title" content="Twitch&#39;s Blog">
-<meta property="og:url" content="http://twitchf.xyz/index.html">
+<meta name="description" content="ansible 无需安装客户端，实现自动化分发主要学习基本模块的使用，playbook的批量执行 基本模块hosts123# cat /etc/ansible/hosts [test]192.168.102.99 #k8s99  command 在远程主机上执行命令 12345[root@opsmanager ops]# ansible test -m command -a &amp;quot;ls /t">
+<meta name="keywords" content="ansible">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ansible的一点点记录">
+<meta property="og:url" content="http://twitchf.xyz/2018/01/25/ansible的一点点记录/index.html">
 <meta property="og:site_name" content="Twitch&#39;s Blog">
+<meta property="og:description" content="ansible 无需安装客户端，实现自动化分发主要学习基本模块的使用，playbook的批量执行 基本模块hosts123# cat /etc/ansible/hosts [test]192.168.102.99 #k8s99  command 在远程主机上执行命令 12345[root@opsmanager ops]# ansible test -m command -a &amp;quot;ls /t">
 <meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-01-25T08:05:47.785Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Twitch&#39;s Blog">
+<meta name="twitter:title" content="ansible的一点点记录">
+<meta name="twitter:description" content="ansible 无需安装客户端，实现自动化分发主要学习基本模块的使用，playbook的批量执行 基本模块hosts123# cat /etc/ansible/hosts [test]192.168.102.99 #k8s99  command 在远程主机上执行命令 12345[root@opsmanager ops]# ansible test -m command -a &amp;quot;ls /t">
 
 
 
@@ -117,13 +122,13 @@
 
 
 
-  <link rel="canonical" href="http://twitchf.xyz/"/>
+  <link rel="canonical" href="http://twitchf.xyz/2018/01/25/ansible的一点点记录/"/>
 
 
 
 
 
-  <title>Twitch's Blog</title>
+  <title>ansible的一点点记录 | Twitch's Blog</title>
   
 
 
@@ -161,8 +166,7 @@
     
   
 
-  <div class="container sidebar-position-left 
-  page-home">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -265,9 +269,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
 
   
 
@@ -297,9 +301,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/01/25/ansible的一点点记录/" itemprop="url">ansible的一点点记录</a></h1>
+          <h1 class="post-title" itemprop="name headline">ansible的一点点记录</h1>
         
 
         <div class="post-meta">
@@ -371,9 +373,7 @@
       
 
       
-        
-          
-            <p>ansible 无需安装客户端，实现自动化分发<br>主要学习基本模块的使用，playbook的批量执行</p>
+        <p>ansible 无需安装客户端，实现自动化分发<br>主要学习基本模块的使用，playbook的批量执行</p>
 <h4 id="基本模块"><a href="#基本模块" class="headerlink" title="基本模块"></a>基本模块</h4><h6 id="hosts"><a href="#hosts" class="headerlink" title="hosts"></a>hosts</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># cat /etc/ansible/hosts </span><br><span class="line">[test]</span><br><span class="line">192.168.102.99 #k8s99</span><br></pre></td></tr></table></figure>
 <ul>
 <li><p>command 在远程主机上执行命令</p>
@@ -426,8 +426,6 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    client_max_body_size 10M;</span><br><span class="line">    listen       &#123;&#123;port&#125;&#125;;  #读取template中变量</span><br><span class="line">    server_name &#123;&#123;server&#125;&#125;;</span><br><span class="line">    gzip         on;</span><br><span class="line">    gzip_types   text/plain text/css application/json application/x-javascript text/xml application/xml text/javascript;</span><br><span class="line"></span><br><span class="line">  location / &#123;</span><br><span class="line">      root   &#123;&#123;root&#125;&#125;;</span><br><span class="line">      index  &#123;&#123;index&#125;&#125;;</span><br><span class="line">      autoindex on; # 索引</span><br><span class="line">      autoindex_exact_size on; # 显示文件大小</span><br><span class="line">      autoindex_localtime on; # 显示文件时间</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
 </ul>
 
-          
-        
       
     </div>
     
@@ -442,290 +440,36 @@
 
     <footer class="post-footer">
       
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://twitchf.xyz/2018/01/25/harbor部署/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="木木">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/18111540?s=400&u=f18c27e63f3c0f54945568af80b368bb962826bc&v=4">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Twitch's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/01/25/harbor部署/" itemprop="url">harbor部署</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-25T14:47:59+08:00">
-                2018-01-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
+        <div class="post-tags">
           
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/docker/" itemprop="url" rel="index">
-                    <span itemprop="name">docker</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
+            <a href="/tags/ansible/" rel="tag"># ansible</a>
           
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
         </div>
-      </header>
-    
+      
 
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
+      
       
       
 
       
-        
-          <h3 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h3><p>docker-compose</p>
-<p>docker</p>
-<p>harbor离线包</p>
-<h3 id="证书生成"><a href="#证书生成" class="headerlink" title="证书生成"></a>证书生成</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">#mkdir -p /data/cert</span><br><span class="line">#cd /data/cert</span><br><span class="line"></span><br><span class="line">创建CA根证书</span><br><span class="line">#openssl req  -newkey rsa:4096 -nodes -sha256 -keyout ca.key -x509 -days 365 -out ca.crt -subj &quot;/C=CN/L=wuhan/O=lisea/CN=harbor-registry&quot;</span><br><span class="line"></span><br><span class="line">生成证书签名，访问域名为hun.fjf.com</span><br><span class="line">#openssl req -newkey rsa:4096 -nodes -sha256 -keyout hub.fjf.com.key -out server.csr -subj &quot;/C=CN/L=wuhan/O=lisea/CN=hub.fjf.com&quot;</span><br><span class="line"></span><br><span class="line">生成主机证书</span><br><span class="line">#openssl x509 -req -days 365 -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out hub.fjf.com.crt</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/01/25/harbor部署/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/01/25/harbor部署/" rel="next" title="harbor部署">
+                <i class="fa fa-chevron-left"></i> harbor部署
+              </a>
+            
           </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
 
-    
+          <span class="post-nav-divider"></span>
 
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://twitchf.xyz/2018/01/24/hello-world/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="木木">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/18111540?s=400&u=f18c27e63f3c0f54945568af80b368bb962826bc&v=4">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Twitch's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/01/24/hello-world/" itemprop="url">Hello World</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
+          <div class="post-nav-prev post-nav-item">
             
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-24T14:42:10+08:00">
-                2018-01-24
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
+          </div>
         </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
       
 
       
-        
-          <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/01/24/hello-world/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
       
     </footer>
   </div>
@@ -735,10 +479,11 @@
   </article>
 
 
-    
-  </section>
 
-  
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -746,6 +491,10 @@
 
 
           
+
+  
+
+
 
         </div>
         
@@ -766,8 +515,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -838,6 +596,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#基本模块"><span class="nav-number">1.</span> <span class="nav-text">基本模块</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#hosts"><span class="nav-number">1.0.1.</span> <span class="nav-text">hosts</span></a></li></ol></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ansible-playbook"><span class="nav-number">2.</span> <span class="nav-text">ansible playbook</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -999,6 +773,10 @@
 
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
 
   
 
