@@ -2,6 +2,20 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://twitchf.xyz/categories/index.html</loc>
+    
+    <lastmod>2018-01-25T07:25:55.432Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://twitchf.xyz/tags/index.html</loc>
+    
+    <lastmod>2018-01-25T07:25:32.890Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://twitchf.xyz/2018/01/24/hello-world/</loc>
     
     <lastmod>2018-01-25T07:11:42.462Z</lastmod>
@@ -12,20 +26,6 @@
     <loc>http://twitchf.xyz/2018/01/25/harbor%E9%83%A8%E7%BD%B2/</loc>
     
     <lastmod>2018-01-25T07:11:13.458Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://twitchf.xyz/categories/index.html</loc>
-    
-    <lastmod>2018-01-24T09:25:14.524Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://twitchf.xyz/tags/index.html</loc>
-    
-    <lastmod>2018-01-24T09:05:43.648Z</lastmod>
     
   </url>
   
