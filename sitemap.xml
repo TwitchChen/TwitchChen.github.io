@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://twitchf.xyz/about/index.html</loc>
+    
+    <lastmod>2018-01-25T07:55:59.722Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://twitchf.xyz/categories/index.html</loc>
     
     <lastmod>2018-01-25T07:33:27.432Z</lastmod>
@@ -26,13 +33,6 @@
     <loc>http://twitchf.xyz/2018/01/25/harbor%E9%83%A8%E7%BD%B2/</loc>
     
     <lastmod>2018-01-25T07:11:13.458Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://twitchf.xyz/about/index.html</loc>
-    
-    <lastmod>2018-01-24T09:02:24.011Z</lastmod>
     
   </url>
   
