@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://twitchf.xyz/"/>
-  <updated>2018-01-27T05:52:06.026Z</updated>
+  <updated>2018-01-27T05:54:02.626Z</updated>
   <id>http://twitchf.xyz/</id>
   
   <author>
@@ -21,16 +21,19 @@
     <link href="http://twitchf.xyz/2018/01/27/flannel%E5%AE%89%E8%A3%85%E6%B3%A8%E6%84%8F%E7%82%B9/"/>
     <id>http://twitchf.xyz/2018/01/27/flannel安装注意点/</id>
     <published>2018-01-27T05:41:47.000Z</published>
-    <updated>2018-01-27T05:52:06.026Z</updated>
+    <updated>2018-01-27T05:54:02.626Z</updated>
     
-    <content type="html"><![CDATA[<h3 id="flannel安装注意"><a href="#flannel安装注意" class="headerlink" title="flannel安装注意"></a>flannel安装注意</h3><p>完成flannel安装后，安装参考 <a href="https://k8s-install.opsnull.com/05-%E9%83%A8%E7%BD%B2Flannel%E7%BD%91%E7%BB%9C.html" target="_blank" rel="noopener">flannel安装</a></p><p>在启动docker前，需要将flannel的网关绑定到docker启动参数上</p><ul><li>启动flannel</li><li><p>查看flannel分配的网络参数</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#cat /run/flannel/subnet.env </span><br><span class="line">FLANNEL_NETWORK=172.30.0.0/16</span><br><span class="line">FLANNEL_SUBNET=172.30.45.1/24</span><br><span class="line">FLANNEL_MTU=1450</span><br><span class="line">FLANNEL_IPMASQ=false</span><br></pre></td></tr></table></figure></li><li><p>创建Docker运行参数</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">使用flannel提供的脚本将subnet.env转写成Docker启动参数，创建好的启动参数位于/run/docker_opts.env文件中。</span><br><span class="line">#mk-docker-opts.sh -d /run/docker_opts.env -c</span><br><span class="line">#vim /lib/systemd/system/docker.service</span><br><span class="line">  ExecStart=/usr/bin/dockerd $DOCKER_OPTS</span><br><span class="line">  # 指定这些启动参数所在的文件位置(这个配置是新增的，同样放在Service标签下)</span><br><span class="line">  EnvironmentFile=/run/docker_opts.env</span><br></pre></td></tr></table></figure></li><li><p>重启docker</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#systemctl daemon-reload</span><br><span class="line">#systemctl restart docker</span><br></pre></td></tr></table></figure></li><li><p>查看网络</p></li></ul><p><img src="http://twitchf.xyz/images/upload/flannel.png" alt="网络"></p>]]></content>
+    <content type="html"><![CDATA[<h3 id="flannel安装注意"><a href="#flannel安装注意" class="headerlink" title="flannel安装注意"></a>flannel安装注意</h3><p>完成flannel安装后，安装参考 <a href="https://k8s-install.opsnull.com/05-%E9%83%A8%E7%BD%B2Flannel%E7%BD%91%E7%BB%9C.html" target="_blank" rel="noopener">flannel安装</a></p><p>在启动docker前，需要将flannel的网关绑定到docker启动参数上</p><ul><li>启动flannel</li><li>查看flannel分配的网络参数<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#cat /run/flannel/subnet.env </span><br><span class="line">FLANNEL_NETWORK=172.30.0.0/16</span><br><span class="line">FLANNEL_SUBNET=172.30.45.1/24</span><br><span class="line">FLANNEL_MTU=1450</span><br><span class="line">FLANNEL_IPMASQ=false</span><br></pre></td></tr></table></figure></li></ul><a id="more"></a><ul><li><p>创建Docker运行参数</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">使用flannel提供的脚本将subnet.env转写成Docker启动参数，创建好的启动参数位于/run/docker_opts.env文件中。</span><br><span class="line">#mk-docker-opts.sh -d /run/docker_opts.env -c</span><br><span class="line">#vim /lib/systemd/system/docker.service</span><br><span class="line">  ExecStart=/usr/bin/dockerd $DOCKER_OPTS</span><br><span class="line">  # 指定这些启动参数所在的文件位置(这个配置是新增的，同样放在Service标签下)</span><br><span class="line">  EnvironmentFile=/run/docker_opts.env</span><br></pre></td></tr></table></figure></li><li><p>重启docker</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#systemctl daemon-reload</span><br><span class="line">#systemctl restart docker</span><br></pre></td></tr></table></figure></li><li><p>查看网络</p></li></ul><p><img src="http://twitchf.xyz/images/upload/flannel.png" alt="网络"></p>]]></content>
     
     <summary type="html">
     
-      
-      
-        &lt;h3 id=&quot;flannel安装注意&quot;&gt;&lt;a href=&quot;#flannel安装注意&quot; class=&quot;headerlink&quot; title=&quot;flannel安装注意&quot;&gt;&lt;/a&gt;flannel安装注意&lt;/h3&gt;&lt;p&gt;完成flannel安装后，安装参考 &lt;a href=&quot;https:/
-      
+      &lt;h3 id=&quot;flannel安装注意&quot;&gt;&lt;a href=&quot;#flannel安装注意&quot; class=&quot;headerlink&quot; title=&quot;flannel安装注意&quot;&gt;&lt;/a&gt;flannel安装注意&lt;/h3&gt;&lt;p&gt;完成flannel安装后，安装参考 &lt;a href=&quot;https://k8s-install.opsnull.com/05-%E9%83%A8%E7%BD%B2Flannel%E7%BD%91%E7%BB%9C.html&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;flannel安装&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;在启动docker前，需要将flannel的网关绑定到docker启动参数上&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;启动flannel&lt;/li&gt;
+&lt;li&gt;查看flannel分配的网络参数&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;#cat /run/flannel/subnet.env &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;FLANNEL_NETWORK=172.30.0.0/16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;FLANNEL_SUBNET=172.30.45.1/24&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;FLANNEL_MTU=1450&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;FLANNEL_IPMASQ=false&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
     
     </summary>
     
