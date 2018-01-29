@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://twitchf.xyz/"/>
-  <updated>2018-01-27T05:54:02.626Z</updated>
+  <updated>2018-01-29T10:59:14.205Z</updated>
   <id>http://twitchf.xyz/</id>
   
   <author>
@@ -15,6 +15,50 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>kafka集群搭建记录</title>
+    <link href="http://twitchf.xyz/2018/01/29/kafka%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA%E8%AE%B0%E5%BD%95/"/>
+    <id>http://twitchf.xyz/2018/01/29/kafka集群搭建记录/</id>
+    <published>2018-01-29T09:36:22.000Z</published>
+    <updated>2018-01-29T10:59:14.205Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="组件"><a href="#组件" class="headerlink" title="组件"></a>组件</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">kafka_2.10-0.10.1.0</span><br><span class="line">zookeeper-3.4.6</span><br><span class="line">jdk 1.8</span><br><span class="line">kafka-manager(用的以前的1.3.1，对kafka10.1支持的不是很好，但能用，最新移步https://github.com/yahoo/kafka-manager)</span><br></pre></td></tr></table></figure><h3 id="机器"><a href="#机器" class="headerlink" title="机器"></a>机器</h3><table><thead><tr><th>HOST</th><th>服务</th></tr></thead><tbody><tr><td>172.18.199.121</td><td>zk，kafka</td></tr><tr><td>172.18.199.124</td><td>zk，kafka</td></tr><tr><td>172.18.199.125</td><td>zk，kafka ，kafka-manager</td></tr></tbody></table><a id="more"></a><h3 id="zookeeper部署"><a href="#zookeeper部署" class="headerlink" title="zookeeper部署"></a>zookeeper部署</h3><ul><li>配置</li></ul><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">tickTime=2000</span><br><span class="line">initLimit=10</span><br><span class="line">syncLimit=5</span><br><span class="line">dataDir=/data/zookeeper</span><br><span class="line">dataLogDir=/var/log/zookeeper</span><br><span class="line">clientPort=2181</span><br><span class="line">maxClientCnxns=600</span><br><span class="line">server.1=172.18.199.121:2888:3888</span><br><span class="line">server.2=172.18.199.124:2888:3888</span><br><span class="line">server.3=172.18.199.125:2888:3888</span><br></pre></td></tr></table></figure><ul><li>注意点</li></ul><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">1、日志路径提前建好</span><br><span class="line">2、myid文件提前准备</span><br><span class="line">[root@kafka125 ops]# cat /data/zookeeper/myid </span><br><span class="line">3</span><br><span class="line">我这里id分别为1，2，3</span><br></pre></td></tr></table></figure><ul><li>依次启动三台</li></ul><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/local/zookeeper-3.4.6/bin/zkServer.sh start /usr/local/zookeeper-3.4.6/conf/zoo.cfg #用自己的配置启动</span><br></pre></td></tr></table></figure><ul><li>检查2181端口启动了</li></ul><h3 id="kafka部署"><a href="#kafka部署" class="headerlink" title="kafka部署"></a>kafka部署</h3><ul><li>配置</li></ul><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">broker.id=3  #broker id,三台机器分别为1，2，3</span><br><span class="line">port=9092 #端口</span><br><span class="line">host.name=172.18.199.125 #各个机器的ip</span><br><span class="line">num.network.threads=5</span><br><span class="line">num.io.threads=4</span><br><span class="line">socket.send.buffer.bytes=102400</span><br><span class="line">socket.receive.buffer.bytes=102400</span><br><span class="line">socket.request.max.bytes=104857600</span><br><span class="line">log.dirs=/data/kafka #数据存放路径</span><br><span class="line">num.partitions=4  #分片数</span><br><span class="line">num.recovery.threads.per.data.dir=1 #副本</span><br><span class="line">default.replication.factor=3</span><br><span class="line">log.flush.interval.messages=10000</span><br><span class="line">log.flush.interval.ms=1000</span><br><span class="line">log.retention.hours=24 #数据保存的时间</span><br><span class="line">log.segment.bytes=1073741824</span><br><span class="line">log.retention.check.interval.ms=300000</span><br><span class="line">log.cleaner.enable=true</span><br><span class="line">delete.topic.enable=true</span><br><span class="line">zookeeper.connect=172.18.199.125:2181,172.18.199.124:2181,172.18.199.121:2181 #zk</span><br><span class="line">zookeeper.connection.timeout.ms=6000</span><br></pre></td></tr></table></figure><ul><li>依次启动三台</li></ul><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/local/kafka_2.10-0.10.1.0/bin/kafka-server-start.sh  /usr/local/kafka_2.10-0.10.1.0/config/server.properties &amp; #自己的配置文件</span><br></pre></td></tr></table></figure><h3 id="kafka-manager"><a href="#kafka-manager" class="headerlink" title="kafka-manager"></a>kafka-manager</h3><ul><li>配置</li></ul><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">play.crypto.secret=&quot;secretofkafka&quot;</span><br><span class="line">play.crypto.secret=$&#123;?APPLICATION_SECRET&#125;</span><br><span class="line"></span><br><span class="line"># The application languages</span><br><span class="line"># ~~~~~</span><br><span class="line">play.i18n.langs=[&quot;en&quot;]</span><br><span class="line"></span><br><span class="line">play.http.requestHandler = &quot;play.http.DefaultHttpRequestHandler&quot;</span><br><span class="line">play.http.context = &quot;/&quot;</span><br><span class="line">play.application.loader=loader.KafkaManagerLoader</span><br><span class="line"></span><br><span class="line">kafka-manager.zkhosts=&quot;172.18.199.125:2181&quot; ##zk</span><br><span class="line">kafka-manager.zkhosts=$&#123;?ZK_HOSTS&#125;</span><br><span class="line">pinned-dispatcher.type=&quot;PinnedDispatcher&quot;</span><br><span class="line">pinned-dispatcher.executor=&quot;thread-pool-executor&quot;</span><br><span class="line">application.features=[&quot;KMClusterManagerFeature&quot;,&quot;KMTopicManagerFeature&quot;,&quot;KMPreferredReplicaElectionFeature&quot;,&quot;KMReassignPartitionsFeature&quot;]</span><br><span class="line"></span><br><span class="line">akka &#123;</span><br><span class="line">  loggers = [&quot;akka.event.slf4j.Slf4jLogger&quot;]</span><br><span class="line">  loglevel = &quot;ERROR&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">basicAuthentication.enabled=false</span><br><span class="line">basicAuthentication.username=&quot;admin&quot;</span><br><span class="line">basicAuthentication.password=&quot;fjf123&quot;</span><br><span class="line">basicAuthentication.realm=&quot;Kafka-Manager&quot;</span><br><span class="line">kafka-manager.consumer.properties.file=$&#123;?CONSUMER_PROPERTIES_FILE&#125;</span><br></pre></td></tr></table></figure><ul><li>启动</li></ul><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./bin/kafka-manager -Dconfig.file=./conf/application.conf -Dhttp.port=9000 &amp; #9000端口</span><br></pre></td></tr></table></figure><ul><li><p>配置</p><p>访问 172.18.199.125:9000<br>添加集群</p><p><img src="http://twitchf.xyz/images/upload/kakfa-add.png" alt="网络"></p><p>​</p><p><img src="http://twitchf.xyz/images/upload/kafka-cluter.png" alt="网络"></p></li></ul>]]></content>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;组件&quot;&gt;&lt;a href=&quot;#组件&quot; class=&quot;headerlink&quot; title=&quot;组件&quot;&gt;&lt;/a&gt;组件&lt;/h3&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;kafka_2.10-0.10.1.0&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;zookeeper-3.4.6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;jdk 1.8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;kafka-manager(用的以前的1.3.1，对kafka10.1支持的不是很好，但能用，最新移步https://github.com/yahoo/kafka-manager)&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h3 id=&quot;机器&quot;&gt;&lt;a href=&quot;#机器&quot; class=&quot;headerlink&quot; title=&quot;机器&quot;&gt;&lt;/a&gt;机器&lt;/h3&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;HOST&lt;/th&gt;
+&lt;th&gt;服务&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;172.18.199.121&lt;/td&gt;
+&lt;td&gt;zk，kafka&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;172.18.199.124&lt;/td&gt;
+&lt;td&gt;zk，kafka&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;172.18.199.125&lt;/td&gt;
+&lt;td&gt;zk，kafka ，kafka-manager&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+    
+    </summary>
+    
+      <category term="linux" scheme="http://twitchf.xyz/categories/linux/"/>
+    
+    
+      <category term="kafka" scheme="http://twitchf.xyz/tags/kafka/"/>
+    
+  </entry>
   
   <entry>
     <title>flannel安装注意点</title>
