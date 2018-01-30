@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="mongodb," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Twitch's Blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="概念MongoDB 副本集（Replica Set）是有自动故障恢复功能的主从集群，有一个Primary节点和一个或多个Secondary节点组成。  同步简单说明： 1：检查自己local库的oplog.rs集合找出最近的时间戳。2：检查Primary节点local库oplog.rs集合，找出大于此时间戳的记录。3：将找到的记录插入到自己的oplog.rs集合中，并执行这些操作  注意：在副本集">
+<meta name="keywords" content="mongodb">
+<meta property="og:type" content="article">
+<meta property="og:title" content="mongodb副本集集群搭建记录">
+<meta property="og:url" content="http://twitchf.xyz/2018/01/30/mongodb副本集集群搭建记录/index.html">
+<meta property="og:site_name" content="Twitch&#39;s Blog">
+<meta property="og:description" content="概念MongoDB 副本集（Replica Set）是有自动故障恢复功能的主从集群，有一个Primary节点和一个或多个Secondary节点组成。  同步简单说明： 1：检查自己local库的oplog.rs集合找出最近的时间戳。2：检查Primary节点local库oplog.rs集合，找出大于此时间戳的记录。3：将找到的记录插入到自己的oplog.rs集合中，并执行这些操作  注意：在副本集">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://twitchf.xyz/images/upload/replica-set-read-write-operations-primary.png">
+<meta property="og:updated_time" content="2018-01-30T10:35:55.150Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="mongodb副本集集群搭建记录">
+<meta name="twitter:description" content="概念MongoDB 副本集（Replica Set）是有自动故障恢复功能的主从集群，有一个Primary节点和一个或多个Secondary节点组成。  同步简单说明： 1：检查自己local库的oplog.rs集合找出最近的时间戳。2：检查Primary节点local库oplog.rs集合，找出大于此时间戳的记录。3：将找到的记录插入到自己的oplog.rs集合中，并执行这些操作  注意：在副本集">
+<meta name="twitter:image" content="http://twitchf.xyz/images/upload/replica-set-read-write-operations-primary.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://twitchf.xyz/2018/01/30/mongodb副本集集群搭建记录/"/>
+
+
+
+
+
+  <title>mongodb副本集集群搭建记录 | Twitch's Blog</title>
+  
+
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-113007148-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?29b228c7fda02234fd570c0e33851131";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Twitch's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://twitchf.xyz/2018/01/30/mongodb副本集集群搭建记录/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="木木">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/18111540?s=400&u=f18c27e63f3c0f54945568af80b368bb962826bc&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Twitch's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">mongodb副本集集群搭建记录</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-30T18:05:55+08:00">
+                2018-01-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/linux/" itemprop="url" rel="index">
+                    <span itemprop="name">linux</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h3><p>MongoDB 副本集（Replica Set）是有自动故障恢复功能的主从集群，有一个Primary节点和一个或多个Secondary节点组成。</p>
+<p><img src="http://twitchf.xyz/images/upload/replica-set-read-write-operations-primary.png" alt="架构图"></p>
+<p>同步简单说明：</p>
+<p>1：检查自己local库的oplog.rs集合找出最近的时间戳。<br>2：检查Primary节点local库oplog.rs集合，找出大于此时间戳的记录。<br>3：将找到的记录插入到自己的oplog.rs集合中，并执行这些操作</p>
+<p> 注意：在副本集的环境中，要是所有的Secondary都宕机了，只剩下Primary。最后Primary会变成Secondary，不能提供服务。所以副本集至少为3台机器。</p>
+<a id="more"></a>
+<h3 id="机器准备"><a href="#机器准备" class="headerlink" title="机器准备"></a>机器准备</h3><table>
+<thead>
+<tr>
+<th>Hostname</th>
+<th>机器</th>
+<th>服务</th>
+<th>说明</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>mongodb-master</td>
+<td>172.18.199.112</td>
+<td>mongodb-master</td>
+<td>主节点 2C8G 200G</td>
+<td></td>
+</tr>
+<tr>
+<td>mongodb-slave117</td>
+<td>172.18.199.117</td>
+<td>mongodb-slave</td>
+<td>从节点 2C8G 200G</td>
+<td></td>
+</tr>
+<tr>
+<td>mongodb-slave118</td>
+<td>172.18.199.118</td>
+<td>mongodb-slave</td>
+<td>从节点 2C8G 200G</td>
+</tr>
+</tbody>
+</table>
+<h3 id="安装说明"><a href="#安装说明" class="headerlink" title="安装说明"></a>安装说明</h3><ul>
+<li><p>一个 主节点 </p>
+</li>
+<li><p>两个 从节点 ，这两个从节点都可以在 选举中 升职为主节点</p>
+</li>
+<li><p>版本 3.4.10</p>
+</li>
+<li><p>安装方式 yum</p>
+</li>
+<li><p>文件路径</p>
+<ul>
+<li>配置文件 /etc/mongod.conf</li>
+<li>数据文件 /data/mongodb</li>
+<li>日志文件 /var/log/mongodb/mongod.log</li>
+</ul>
+</li>
+<li><p>配置文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">systemLog:</span><br><span class="line">  destination: file</span><br><span class="line">  logAppend: true</span><br><span class="line">  path: /var/log/mongodb/mongod.log</span><br><span class="line">  </span><br><span class="line">storage:</span><br><span class="line">  dbPath: /data/mongodb #数据存储目录</span><br><span class="line">  journal:</span><br><span class="line">    enabled: true</span><br><span class="line"></span><br><span class="line">processManagement:</span><br><span class="line">  fork: true  #守护进程启动</span><br><span class="line">  pidFilePath: /var/run/mongodb/mongod.pid  </span><br><span class="line"></span><br><span class="line">net:</span><br><span class="line">  port: 27017 </span><br><span class="line">  bindIp: 127.0.0.1,172.18.199.xx(112,117,118) #监听端口  </span><br><span class="line">  </span><br><span class="line">replication:</span><br><span class="line">  replSetName: prodrc #副本集名称</span><br><span class="line">  </span><br><span class="line">security:	#集群间认证，开启密码验证</span><br><span class="line">  authorization: enabled</span><br><span class="line">  keyFile: /data/mongodb/keyfile/mongokey</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><ul>
+<li><p>配置yum源</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">vi /etc/yum.repos.d/mongodb-3.4.repo  </span><br><span class="line">[mongodb-org-3.4]</span><br><span class="line">name=MongoDB Repository</span><br><span class="line">baseurl=https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/3.4/x86_64/</span><br><span class="line">gpgcheck=0</span><br><span class="line">enabled=1</span><br><span class="line">gpgkey=https://www.mongodb.org/static/pgp/server-3.2.asc</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>安装</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install mongodb-org</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>启动</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mongod -f /etc/mongod.conf --httpinterface --fork --rest</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="集群设置"><a href="#集群设置" class="headerlink" title="集群设置"></a>集群设置</h3><ul>
+<li><p>在主节点上执行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mongo&gt;rs.initiate() #副本集初始化</span><br><span class="line">prodrc:PRIMARY&gt; rs.add(&quot;172.18.199.117&quot;) #添加从节点</span><br><span class="line">prodrc:PRIMARY&gt; rs.add(&quot;172.18.199.118&quot;)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>各个节点查看状态,三台机器都ok</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br></pre></td><td class="code"><pre><span class="line">prodrc:PRIMARY&gt; rs.status() #查看状态</span><br><span class="line">&#123;</span><br><span class="line">	&quot;set&quot; : &quot;prodrc&quot;,</span><br><span class="line">	&quot;date&quot; : ISODate(&quot;2017-12-20T09:23:48.805Z&quot;),</span><br><span class="line">	&quot;myState&quot; : 1,</span><br><span class="line">	&quot;term&quot; : NumberLong(1),</span><br><span class="line">	&quot;heartbeatIntervalMillis&quot; : NumberLong(2000),</span><br><span class="line">	&quot;optimes&quot; : &#123;</span><br><span class="line">		&quot;lastCommittedOpTime&quot; : &#123;</span><br><span class="line">			&quot;ts&quot; : Timestamp(1513761819, 1),</span><br><span class="line">			&quot;t&quot; : NumberLong(1)</span><br><span class="line">		&#125;,</span><br><span class="line">		&quot;appliedOpTime&quot; : &#123;</span><br><span class="line">			&quot;ts&quot; : Timestamp(1513761819, 1),</span><br><span class="line">			&quot;t&quot; : NumberLong(1)</span><br><span class="line">		&#125;,</span><br><span class="line">		&quot;durableOpTime&quot; : &#123;</span><br><span class="line">			&quot;ts&quot; : Timestamp(1513761819, 1),</span><br><span class="line">			&quot;t&quot; : NumberLong(1)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;,</span><br><span class="line">	&quot;members&quot; : [</span><br><span class="line">		&#123;</span><br><span class="line">			&quot;_id&quot; : 0,</span><br><span class="line">			&quot;name&quot; : &quot;172.18.199.112:27017&quot;,</span><br><span class="line">			&quot;health&quot; : 1,</span><br><span class="line">			&quot;state&quot; : 1,</span><br><span class="line">			&quot;stateStr&quot; : &quot;PRIMARY&quot;, #主节点</span><br><span class="line">			&quot;uptime&quot; : 2073,</span><br><span class="line">			&quot;optime&quot; : &#123;</span><br><span class="line">				&quot;ts&quot; : Timestamp(1513761819, 1),</span><br><span class="line">				&quot;t&quot; : NumberLong(1)</span><br><span class="line">			&#125;,</span><br><span class="line">			&quot;optimeDate&quot; : ISODate(&quot;2017-12-20T09:23:39Z&quot;),</span><br><span class="line">			&quot;electionTime&quot; : Timestamp(1513759797, 2),</span><br><span class="line">			&quot;electionDate&quot; : ISODate(&quot;2017-12-20T08:49:57Z&quot;),</span><br><span class="line">			&quot;configVersion&quot; : 3,</span><br><span class="line">			&quot;self&quot; : true</span><br><span class="line">		&#125;,</span><br><span class="line">		&#123;</span><br><span class="line">			&quot;_id&quot; : 1,</span><br><span class="line">			&quot;name&quot; : &quot;172.18.199.117:27017&quot;,</span><br><span class="line">			&quot;health&quot; : 1,</span><br><span class="line">			&quot;state&quot; : 2,</span><br><span class="line">			&quot;stateStr&quot; : &quot;SECONDARY&quot;, #从节点</span><br><span class="line">			&quot;uptime&quot; : 1872,</span><br><span class="line">			&quot;optime&quot; : &#123;</span><br><span class="line">				&quot;ts&quot; : Timestamp(1513761819, 1),</span><br><span class="line">				&quot;t&quot; : NumberLong(1)</span><br><span class="line">			&#125;,</span><br><span class="line">			&quot;optimeDurable&quot; : &#123;</span><br><span class="line">				&quot;ts&quot; : Timestamp(1513761819, 1),</span><br><span class="line">				&quot;t&quot; : NumberLong(1)</span><br><span class="line">			&#125;,</span><br><span class="line">			&quot;optimeDate&quot; : ISODate(&quot;2017-12-20T09:23:39Z&quot;),</span><br><span class="line">			&quot;optimeDurableDate&quot; : ISODate(&quot;2017-12-20T09:23:39Z&quot;),</span><br><span class="line">			&quot;lastHeartbeat&quot; : ISODate(&quot;2017-12-20T09:23:48.168Z&quot;),</span><br><span class="line">			&quot;lastHeartbeatRecv&quot; : ISODate(&quot;2017-12-20T09:23:47.231Z&quot;),</span><br><span class="line">			&quot;pingMs&quot; : NumberLong(0),</span><br><span class="line">			&quot;syncingTo&quot; : &quot;172.18.199.112:27017&quot;,</span><br><span class="line">			&quot;configVersion&quot; : 3</span><br><span class="line">		&#125;,</span><br><span class="line">		&#123;</span><br><span class="line">			&quot;_id&quot; : 2,</span><br><span class="line">			&quot;name&quot; : &quot;172.18.199.118:27017&quot;,</span><br><span class="line">			&quot;health&quot; : 1,</span><br><span class="line">			&quot;state&quot; : 2,</span><br><span class="line">			&quot;stateStr&quot; : &quot;SECONDARY&quot;,  #从节点</span><br><span class="line">			&quot;uptime&quot; : 1869,</span><br><span class="line">			&quot;optime&quot; : &#123;</span><br><span class="line">				&quot;ts&quot; : Timestamp(1513761819, 1),</span><br><span class="line">				&quot;t&quot; : NumberLong(1)</span><br><span class="line">			&#125;,</span><br><span class="line">			&quot;optimeDurable&quot; : &#123;</span><br><span class="line">				&quot;ts&quot; : Timestamp(1513761819, 1),</span><br><span class="line">				&quot;t&quot; : NumberLong(1)</span><br><span class="line">			&#125;,</span><br><span class="line">			&quot;optimeDate&quot; : ISODate(&quot;2017-12-20T09:23:39Z&quot;),</span><br><span class="line">			&quot;optimeDurableDate&quot; : ISODate(&quot;2017-12-20T09:23:39Z&quot;),</span><br><span class="line">			&quot;lastHeartbeat&quot; : ISODate(&quot;2017-12-20T09:23:48.168Z&quot;),</span><br><span class="line">			&quot;lastHeartbeatRecv&quot; : ISODate(&quot;2017-12-20T09:23:47.226Z&quot;),</span><br><span class="line">			&quot;pingMs&quot; : NumberLong(0),</span><br><span class="line">			&quot;syncingTo&quot; : &quot;172.18.199.112:27017&quot;,</span><br><span class="line">			&quot;configVersion&quot; : 3</span><br><span class="line">		&#125;</span><br><span class="line">	],</span><br><span class="line">	&quot;ok&quot; : 1</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>从节点设置</p>
+<p>默认从节点不允许写入，只允许读取，执行允许可读写</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">prodrc:SECONDARY&gt; rs.slaveOk()</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="创建集群认证"><a href="#创建集群认证" class="headerlink" title="创建集群认证"></a>创建集群认证</h3><ul>
+<li><p>创建key文件</p>
+<p>注意，三个节点必须要用同一份keyfile，在一台机器生成，拷贝到另外两台，并且修改成 600 的文件属性。</p>
+<p>key用于集群间通信同步使用，若没有，则集群不可用。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># openssl rand -base64 90 -out keyfile</span><br><span class="line"># cp keyfile /data/mongodb/keyfile/mongokey</span><br><span class="line"># chmod 600 /data/mongodb/keyfile/mongokey</span><br></pre></td></tr></table></figure>
+<p>并且把这份keyfile同步到其他两个节点的/data/mongodb/keyfile/mongokey 文件夹中</p>
+</li>
+<li><p>关闭副本集</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># mongo --port 27018</span><br><span class="line">replSet:PRIMARY&gt; use admin</span><br><span class="line">replSet:PRIMARY&gt; db.shutdownServer()</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>配置文件添加</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">security:</span><br><span class="line">  authorization: enabled</span><br><span class="line">  keyFile: /data/mongodb/keyfile/mongokey  #之前启动集群是不带这段配置</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>重启副本集群</p>
+</li>
+<li><p>添加admin账户</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">db.createUser(</span><br><span class="line">  &#123;</span><br><span class="line">    user: &quot;admin&quot;,</span><br><span class="line">    pwd: &quot;password&quot;,</span><br><span class="line">    roles: [ &#123; role: &quot;root&quot;, db: &quot;admin&quot; &#125; ]</span><br><span class="line">  &#125;</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>添加库账号</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&gt;use xxdb</span><br><span class="line">&gt;db.createUser(</span><br><span class="line">  &#123;</span><br><span class="line">  	user:&quot;mytest&quot;,</span><br><span class="line">  	pwd:&quot;mytest&quot;,</span><br><span class="line">  	roles:[&#123;role:&quot;dbOwner&quot;,db:&quot;mytest&quot;&#125;]</span><br><span class="line">  	&#125;</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>登陆说明</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mongo --port 27017 -u &quot;username&quot; -p &quot;password&quot; --authenticationDatabase &quot;admin&quot;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h3><p><a href="https://github.com/johnnian/Blog/issues/8" target="_blank" rel="noopener">https://github.com/johnnian/Blog/issues/8</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/mongodb/" rel="tag"># mongodb</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/01/29/kafka集群搭建记录/" rel="next" title="kafka集群搭建记录">
+                <i class="fa fa-chevron-left"></i> kafka集群搭建记录
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://avatars2.githubusercontent.com/u/18111540?s=400&u=f18c27e63f3c0f54945568af80b368bb962826bc&v=4"
+                alt="木木" />
+            
+              <p class="site-author-name" itemprop="name">木木</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#概念"><span class="nav-number">1.</span> <span class="nav-text">概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#机器准备"><span class="nav-number">2.</span> <span class="nav-text">机器准备</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装说明"><span class="nav-number">3.</span> <span class="nav-text">安装说明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装"><span class="nav-number">4.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#集群设置"><span class="nav-number">5.</span> <span class="nav-text">集群设置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#创建集群认证"><span class="nav-number">6.</span> <span class="nav-text">创建集群认证</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考文档"><span class="nav-number">7.</span> <span class="nav-text">参考文档</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">木木</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+
+
+
+  
+  
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three-waves.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/canvas_lines.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
