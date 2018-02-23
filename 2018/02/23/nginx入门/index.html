@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="nginx lua," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Twitch's Blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="nginx1、介绍 Master进程负责 调用各module的初始化函数，读取解析nginx配置文件，模块module 解析执行 nginx.conf 配置文件流程分析 ； 充当整个进程组与用户的交互接口，接收用户操作信号管理worker进程，nginx核心进程模型   Worker进程负责 抢占进程锁，从监听套接字中获取客户端连接，实现负载均衡； 接收客户端套接字的数据，传递给upstream（">
+<meta name="keywords" content="nginx lua">
+<meta property="og:type" content="article">
+<meta property="og:title" content="nginx入门">
+<meta property="og:url" content="http://twitchf.xyz/2018/02/23/nginx入门/index.html">
+<meta property="og:site_name" content="Twitch&#39;s Blog">
+<meta property="og:description" content="nginx1、介绍 Master进程负责 调用各module的初始化函数，读取解析nginx配置文件，模块module 解析执行 nginx.conf 配置文件流程分析 ； 充当整个进程组与用户的交互接口，接收用户操作信号管理worker进程，nginx核心进程模型   Worker进程负责 抢占进程锁，从监听套接字中获取客户端连接，实现负载均衡； 接收客户端套接字的数据，传递给upstream（">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://twitchf.xyz/images/upload/ngx_request.png">
+<meta property="og:updated_time" content="2018-02-23T05:44:09.824Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="nginx入门">
+<meta name="twitter:description" content="nginx1、介绍 Master进程负责 调用各module的初始化函数，读取解析nginx配置文件，模块module 解析执行 nginx.conf 配置文件流程分析 ； 充当整个进程组与用户的交互接口，接收用户操作信号管理worker进程，nginx核心进程模型   Worker进程负责 抢占进程锁，从监听套接字中获取客户端连接，实现负载均衡； 接收客户端套接字的数据，传递给upstream（">
+<meta name="twitter:image" content="http://twitchf.xyz/images/upload/ngx_request.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://twitchf.xyz/2018/02/23/nginx入门/"/>
+
+
+
+
+
+  <title>nginx入门 | Twitch's Blog</title>
+  
+
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-113007148-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?29b228c7fda02234fd570c0e33851131";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Twitch's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://twitchf.xyz/2018/02/23/nginx入门/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="木木">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/18111540?s=400&u=f18c27e63f3c0f54945568af80b368bb962826bc&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Twitch's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">nginx入门</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-23T13:38:12+08:00">
+                2018-02-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/linux/" itemprop="url" rel="index">
+                    <span itemprop="name">linux</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="nginx"><a href="#nginx" class="headerlink" title="nginx"></a>nginx</h3><h4 id="1、介绍"><a href="#1、介绍" class="headerlink" title="1、介绍"></a>1、介绍</h4><ul>
+<li><strong>Master进程负责</strong><ol>
+<li>调用各module的初始化函数，读取解析nginx配置文件，模块module 解析执行 nginx.conf 配置文件流程分析 ；</li>
+<li>充当整个进程组与用户的交互接口，接收用户操作信号管理worker进程，nginx核心进程模型</li>
+</ol>
+</li>
+<li><strong>Worker进程负责</strong><ol>
+<li>抢占进程锁，从监听套接字中获取客户端连接，实现负载均衡；</li>
+<li>接收客户端套接字的数据，传递给upstream（如果有upstream），则否返回静态文件；</li>
+<li>接收并处理Master套接字中的交互命令。</li>
+</ol>
+</li>
+</ul>
+<a id="more"></a>
+<ul>
+<li><p>异步非阻塞</p>
+</li>
+<li><p>connection</p>
+<ul>
+<li>nginx中connection就是对tcp连接的封装，其中包括连接的socket，读事件，写事件。</li>
+</ul>
+</li>
+<li><p>request</p>
+<ul>
+<li><p>在nginx中我们指的是http请求，具体到nginx中的数据结构是ngx_http_request_t。ngx_http_request_t是对一个http请求的封装。 我们知道，一个http请求，包含请求行、请求头、请求体、响应行、响应头、响应体。</p>
+<p><img src="http://twitchf.xyz/images/upload/ngx_request.png" alt="ngx_request"></p>
+</li>
+</ul>
+</li>
+<li><p><strong>keepalive</strong></p>
+</li>
+<li><p>pipe</p>
+<ul>
+<li>如果客户端要提交多个请求，对于keepalive来说，那么第二个请求，必须要等到第一个请求的响应接收完全后，才能发起，这和TCP的停止等待协议是一样的，得到两个响应的时间至少为2<em>RTT。而对pipeline来说，客户端不必等到第一个请求处理完后，就可以马上发起第二个请求。得到两个响应的时间可能能够达到1\</em>RTT。</li>
+</ul>
+</li>
+<li><p><strong>lingering_close</strong></p>
+<ul>
+<li>字面意思就是延迟关闭，也就是说，当nginx要关闭连接时，并非立即关闭连接，而是先关闭tcp连接的写，再等待一段时间后再关掉连接的读。</li>
+</ul>
+</li>
+<li><p><strong>配置文件</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">main:	nginx在运行时与具体业务功能（比如http服务或者email服务代理）无关的一些参数，比如工作进程数，运行的身份等。</span><br><span class="line">http:	与提供http服务相关的一些配置参数。例如：是否使用keepalive啊，是否使用gzip进行压缩等。</span><br><span class="line">server:	http服务上支持若干虚拟主机。每个虚拟主机一个对应的server配置项，配置项里面包含该虚拟主机相关的配置。在提供mail服务的代理时，也可以建立若干server.每个server通过监听的地址来区分。</span><br><span class="line">location:	http服务中，某些特定的URL对应的一系列配置项。</span><br><span class="line">mail:	实现email相关的SMTP/IMAP/POP3代理时，共享的一些配置项（因为可能实现多个代理，工作在多个监听地址上）。</span><br></pre></td></tr></table></figure>
+<p>存在于main上下文中的配置指令如下:</p>
+<ul>
+<li>user</li>
+<li>worker_processes</li>
+<li>error_log</li>
+<li>events</li>
+<li>http</li>
+<li>mail</li>
+</ul>
+<p>存在于http上下文中的指令如下:</p>
+<ul>
+<li>server</li>
+</ul>
+<p>存在于mail上下文中的指令如下：</p>
+<ul>
+<li>server</li>
+<li>auth_http</li>
+<li>imap_capabilities</li>
+</ul>
+<p>存在于server上下文中的配置指令如下：</p>
+<ul>
+<li>listen</li>
+<li>server_name</li>
+<li>access_log</li>
+<li>location</li>
+<li>protocol</li>
+<li>proxy</li>
+<li>smtp_auth</li>
+<li>xclient</li>
+</ul>
+<p>存在于location上下文中的指令如下：</p>
+<ul>
+<li>index</li>
+<li>root</li>
+</ul>
+</li>
+</ul>
+<h4 id="2、location-匹配规则"><a href="#2、location-匹配规则" class="headerlink" title="2、location 匹配规则"></a>2、location 匹配规则</h4><ul>
+<li><p>语法规则</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">location [=|~|~*|^~] /uri/ &#123; … &#125;</span><br><span class="line">模式	含义</span><br><span class="line">location = /uri	= 表示精确匹配，只有完全匹配上才能生效</span><br><span class="line">location ^~ /uri	^~ 开头对URL路径进行前缀匹配，并且在正则之前。</span><br><span class="line">location ~ pattern	开头表示区分大小写的正则匹配</span><br><span class="line">location ~* pattern	开头表示不区分大小写的正则匹配</span><br><span class="line">location /uri	不带任何修饰符，也表示前缀匹配，但是在正则匹配之后</span><br><span class="line">location /	通用匹配，任何未匹配到其它location的请求都会匹配到，相当于switch中的default</span><br><span class="line">前缀匹配时，Nginx 不对 url 做编码，因此请求为 /static/20%/aa，可以被规则 ^~ /static/ /aa 匹配到（注意是空格）</span><br><span class="line">多个 location 配置的情况下匹配顺序为（参考资料而来，还未实际验证，试试就知道了，不必拘泥，仅供参考）:</span><br><span class="line">首先精确匹配 =</span><br><span class="line">其次前缀匹配 ^~</span><br><span class="line">其次是按文件中顺序的正则匹配</span><br><span class="line">然后匹配不带任何修饰的前缀匹配。</span><br><span class="line">最后是交给 / 通用匹配</span><br><span class="line">当有匹配成功时候，停止匹配，按当前匹配规则处理请求</span><br><span class="line">注意：前缀匹配，如果有包含关系时，按最大匹配原则进行匹配。比如在前缀匹配：location /dir01 与 location /dir01/dir02，如有请求 http://localhost/dir01/dir02/file 将最终匹配到 location /dir01/dir02</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>例子，有如下匹配规则：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">location = / &#123;</span><br><span class="line">   echo &quot;规则A&quot;;</span><br><span class="line">&#125;</span><br><span class="line">location = /login &#123;</span><br><span class="line">   echo &quot;规则B&quot;;</span><br><span class="line">&#125;</span><br><span class="line">location ^~ /static/ &#123;</span><br><span class="line">   echo &quot;规则C&quot;;</span><br><span class="line">&#125;</span><br><span class="line">location ^~ /static/files &#123;</span><br><span class="line">    echo &quot;规则X&quot;;</span><br><span class="line">&#125;</span><br><span class="line">location ~ \.(gif|jpg|png|js|css)$ &#123;</span><br><span class="line">   echo &quot;规则D&quot;;</span><br><span class="line">&#125;</span><br><span class="line">location ~* \.png$ &#123;</span><br><span class="line">   echo &quot;规则E&quot;;</span><br><span class="line">&#125;</span><br><span class="line">location /img &#123;</span><br><span class="line">    echo &quot;规则Y&quot;;</span><br><span class="line">&#125;</span><br><span class="line">location / &#123;</span><br><span class="line">   echo &quot;规则F&quot;;</span><br><span class="line">&#125;</span><br><span class="line">那么产生的效果如下：</span><br><span class="line">访问根目录 /，比如 http://localhost/ 将匹配 规则A</span><br><span class="line">访问 http://localhost/login 将匹配 规则B，http://localhost/register 则匹配 规则F</span><br><span class="line">访问 http://localhost/static/a.html 将匹配 规则C</span><br><span class="line">访问 http://localhost/static/files/a.exe 将匹配 规则X，虽然 规则C 也能匹配到，但因为最大匹配原则，最终选中了 规则X。你可以测试下，去掉规则 X ，则当前 URL 会匹配上 规则C。</span><br><span class="line">访问 http://localhost/a.gif, http://localhost/b.jpg 将匹配 规则D 和 规则 E ，但是 规则 D 顺序优先，规则 E 不起作用，而 http://localhost/static/c.png 则优先匹配到 规则 C</span><br><span class="line">访问 http://localhost/a.PNG 则匹配 规则 E ，而不会匹配 规则 D ，因为 规则 E 不区分大小写。</span><br><span class="line">访问 http://localhost/img/a.gif 会匹配上 规则D,虽然 规则Y 也可以匹配上，但是因为正则匹配优先，而忽略了 规则Y。</span><br><span class="line">访问 http://localhost/img/a.tiff 会匹配上 规则Y。</span><br><span class="line">访问 http://localhost/category/id/1111 则最终匹配到规则 F ，因为以上规则都不匹配，这个时候应该是 Nginx 转发请求给后端应用服务器，比如 FastCGI（php），tomcat（jsp），Nginx 作为反向代理服务器存在。</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>小结</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">所以实际使用中，笔者觉得至少有三个匹配规则定义，如下：</span><br><span class="line"># 直接匹配网站根，通过域名访问网站首页比较频繁，使用这个会加速处理，官网如是说。</span><br><span class="line"># 这里是直接转发给后端应用服务器了，也可以是一个静态首页</span><br><span class="line"># 第一个必选规则</span><br><span class="line">location = / &#123;</span><br><span class="line">    proxy_pass http://tomcat:8080/index</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"># 第二个必选规则是处理静态文件请求，这是 nginx 作为 http 服务器的强项</span><br><span class="line"># 有两种配置模式，目录匹配或后缀匹配，任选其一或搭配使用</span><br><span class="line">location ^~ /static/ &#123;</span><br><span class="line">    root /webroot/static/;</span><br><span class="line">&#125;</span><br><span class="line">location ~* \.(gif|jpg|jpeg|png|css|js|ico)$ &#123;</span><br><span class="line">    root /webroot/res/;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"># 第三个规则就是通用规则，用来转发动态请求到后端应用服务器</span><br><span class="line"># 非静态文件请求就默认是动态请求，自己根据实际把握</span><br><span class="line"># 毕竟目前的一些框架的流行，带.php、.jsp后缀的情况很少了</span><br><span class="line">location / &#123;</span><br><span class="line">    proxy_pass http://tomcat:8080/</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h4 id="3、rewrite-语法"><a href="#3、rewrite-语法" class="headerlink" title="3、rewrite 语法"></a>3、rewrite 语法</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">last – 基本上都用这个 Flag</span><br><span class="line">break – 中止 Rewirte，不再继续匹配</span><br><span class="line">redirect – 返回临时重定向的 HTTP 状态 302</span><br><span class="line">permanent – 返回永久重定向的 HTTP 状态 301</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">1、下面是可以用来判断的表达式：</span><br><span class="line">-f 和 !-f 用来判断是否存在文件</span><br><span class="line">-d 和 !-d 用来判断是否存在目录</span><br><span class="line">-e 和 !-e 用来判断是否存在文件或目录</span><br><span class="line">-x 和 !-x 用来判断文件是否可执行</span><br><span class="line">2、下面是可以用作判断的全局变量</span><br><span class="line">例：http://localhost:88/test1/test2/test.php?k=v</span><br><span class="line">$host：localhost</span><br><span class="line">$server_port：88</span><br><span class="line">$request_uri：/test1/test2/test.php?k=v</span><br><span class="line">$document_uri：/test1/test2/test.php</span><br><span class="line">$document_root：D:\nginx/html</span><br><span class="line">$request_filename：D:\nginx/html/test1/test2/test.php</span><br><span class="line">redirect 语法</span><br><span class="line"></span><br><span class="line">server &#123;</span><br><span class="line">    listen 80;</span><br><span class="line">    server_name start.igrow.cn;</span><br><span class="line">    index index.html index.php;</span><br><span class="line">    root html;</span><br><span class="line">    if ($http_host !~ &quot;^star\.igrow\.cn$&quot;) &#123;</span><br><span class="line">        rewrite ^(.*) http://star.igrow.cn$1 redirect;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">防盗链</span><br><span class="line"></span><br><span class="line">location ~* \.(gif|jpg|swf)$ &#123;</span><br><span class="line">    valid_referers none blocked start.igrow.cn sta.igrow.cn;</span><br><span class="line">    if ($invalid_referer) &#123;</span><br><span class="line">       rewrite ^/ http://$host/logo.png;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">根据文件类型设置过期时间</span><br><span class="line"></span><br><span class="line">location ~* \.(js|css|jpg|jpeg|gif|png|swf)$ &#123;</span><br><span class="line">    if (-f $request_filename) &#123;</span><br><span class="line">        expires 1h;</span><br><span class="line">        break;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">禁止访问某个目录</span><br><span class="line"></span><br><span class="line">location ~* \.(txt|doc)$&#123;</span><br><span class="line">    root /data/www/wwwroot/linuxtone/test;</span><br><span class="line">    deny all;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>一些可用的全局变量，可以参考<a href="https://moonbingbing.gitbooks.io/openresty-best-practices/content/openresty/inline_var.html" target="_blank" rel="noopener">获取 Nginx 内置绑定变量</a>章节。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/nginx-lua/" rel="tag"># nginx lua</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/01/30/mongodb副本集集群搭建记录/" rel="next" title="mongodb副本集集群搭建记录">
+                <i class="fa fa-chevron-left"></i> mongodb副本集集群搭建记录
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://avatars2.githubusercontent.com/u/18111540?s=400&u=f18c27e63f3c0f54945568af80b368bb962826bc&v=4"
+                alt="木木" />
+            
+              <p class="site-author-name" itemprop="name">木木</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#nginx"><span class="nav-number">1.</span> <span class="nav-text">nginx</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1、介绍"><span class="nav-number">1.1.</span> <span class="nav-text">1、介绍</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2、location-匹配规则"><span class="nav-number">1.2.</span> <span class="nav-text">2、location 匹配规则</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3、rewrite-语法"><span class="nav-number">1.3.</span> <span class="nav-text">3、rewrite 语法</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">木木</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+
+
+
+  
+  
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three-waves.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/canvas_lines.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
