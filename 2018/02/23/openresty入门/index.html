@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="nginx," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Twitch's Blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="安装123sudo yum install yum-utilssudo yum-config-manager --add-repo https://openresty.org/package/centos/openresty.reposudo yum install openresty">
+<meta name="keywords" content="nginx">
+<meta property="og:type" content="article">
+<meta property="og:title" content="openresty入门">
+<meta property="og:url" content="http://twitchf.xyz/2018/02/23/openresty入门/index.html">
+<meta property="og:site_name" content="Twitch&#39;s Blog">
+<meta property="og:description" content="安装123sudo yum install yum-utilssudo yum-config-manager --add-repo https://openresty.org/package/centos/openresty.reposudo yum install openresty">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-02-23T09:46:27.215Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="openresty入门">
+<meta name="twitter:description" content="安装123sudo yum install yum-utilssudo yum-config-manager --add-repo https://openresty.org/package/centos/openresty.reposudo yum install openresty">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://twitchf.xyz/2018/02/23/openresty入门/"/>
+
+
+
+
+
+  <title>openresty入门 | Twitch's Blog</title>
+  
+
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-113007148-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?29b228c7fda02234fd570c0e33851131";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Twitch's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://twitchf.xyz/2018/02/23/openresty入门/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="木木">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/18111540?s=400&u=f18c27e63f3c0f54945568af80b368bb962826bc&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Twitch's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">openresty入门</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-23T17:08:32+08:00">
+                2018-02-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/linux/" itemprop="url" rel="index">
+                    <span itemprop="name">linux</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo yum install yum-utils</span><br><span class="line">sudo yum-config-manager --add-repo https://openresty.org/package/centos/openresty.repo</span><br><span class="line">sudo yum install openresty</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<h3 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h3><p>nginx conf添加</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    listen       8080;</span><br><span class="line">    server_name  _;</span><br><span class="line"></span><br><span class="line">    # Load configuration files for the default server block.</span><br><span class="line"></span><br><span class="line">    location / &#123;</span><br><span class="line">      default_type text/html;</span><br><span class="line">     # content_by_lua &apos;</span><br><span class="line">     #   ngx.say(&quot;hello world&quot;)</span><br><span class="line">     # &apos;;</span><br><span class="line">      content_by_lua_file /usr/local/openresty/nginx/conf/vhosts/lua/hello.lua;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    location /get_random_string &#123;</span><br><span class="line">      default_type text/html;</span><br><span class="line">      content_by_lua_file /usr/local/openresty/nginx/conf/vhosts/lua/get_random_string.lua;</span><br><span class="line">    &#125;</span><br><span class="line">    location /decode_info &#123;</span><br><span class="line">      default_type text/html;</span><br><span class="line">      content_by_lua_file /usr/local/openresty/nginx/conf/vhosts/lua/decode_info.lua;</span><br><span class="line">    &#125;</span><br><span class="line">    location /redis &#123;</span><br><span class="line">      default_type text/html;</span><br><span class="line">      content_by_lua_file /usr/local/openresty/nginx/conf/vhosts/lua/redis.lua;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="hello-world"><a href="#hello-world" class="headerlink" title="hello world"></a>hello world</h3><p>hello.lua</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ngx.say(&quot;hello world&quot;)</span><br></pre></td></tr></table></figure>
+<p>结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost vhosts]# curl http://192.168.102.227:8080/hello </span><br><span class="line">hello world</span><br></pre></td></tr></table></figure>
+<h3 id="获取get参数"><a href="#获取get参数" class="headerlink" title="获取get参数"></a>获取get参数</h3><p>get_random_string.lua</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">local args = ngx.req.get_uri_args()</span><br><span class="line">local salt = args.salt</span><br><span class="line">if not salt then</span><br><span class="line">    ngx.exit(ngx.HTTP_BAD_REQUEST)</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">local string = ngx.md5(ngx.time() .. salt)</span><br><span class="line">ngx.say(string)</span><br></pre></td></tr></table></figure>
+<p>结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost vhosts]# curl http://192.168.102.227:8080/get_random_string -i</span><br><span class="line">HTTP/1.1 400 Bad Request</span><br><span class="line">Server: openresty/1.13.6.1</span><br><span class="line">Date: Fri, 23 Feb 2018 09:20:42 GMT</span><br><span class="line">Content-Type: text/html</span><br><span class="line">Content-Length: 179</span><br><span class="line">Connection: close</span><br><span class="line"></span><br><span class="line">&lt;html&gt;</span><br><span class="line">&lt;head&gt;&lt;title&gt;400 Bad Request&lt;/title&gt;&lt;/head&gt;</span><br><span class="line">&lt;body bgcolor=&quot;white&quot;&gt;</span><br><span class="line">&lt;center&gt;&lt;h1&gt;400 Bad Request&lt;/h1&gt;&lt;/center&gt;</span><br><span class="line">&lt;hr&gt;&lt;center&gt;openresty/1.13.6.1&lt;/center&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br><span class="line"></span><br><span class="line">[root@localhost vhosts]# curl http://192.168.102.227:8080/get_random_string?salt=test -i</span><br><span class="line">HTTP/1.1 200 OK</span><br><span class="line">Server: openresty/1.13.6.1</span><br><span class="line">Date: Fri, 23 Feb 2018 09:20:50 GMT</span><br><span class="line">Content-Type: text/html</span><br><span class="line">Transfer-Encoding: chunked</span><br><span class="line">Connection: keep-alive</span><br><span class="line"></span><br><span class="line">387d778a137a586b3088ffd7e75d7e24</span><br></pre></td></tr></table></figure>
+<h3 id="返回json数据"><a href="#返回json数据" class="headerlink" title="返回json数据"></a>返回json数据</h3><p>获取post的base64数据，解密并返回json</p>
+<p>decode_info.lua</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">local json = require &quot;cjson&quot; --包引入</span><br><span class="line"></span><br><span class="line">ngx.req.read_body()</span><br><span class="line">local args = ngx.req.get_post_args()</span><br><span class="line"></span><br><span class="line">if not args or not args.info then</span><br><span class="line">    ngx.exit(ngx.HTTP_BAD_REQUEST)</span><br><span class="line">end</span><br><span class="line">local client_ip = ngx.var.remote_addr --获取客户端ip</span><br><span class="line">local user_agent = ngx.req.get_headers()[&apos;user-agent&apos;] or &apos;&apos; --获取客户端</span><br><span class="line">local info = ngx.decode_base64(args.info) --获取传入的base64参数</span><br><span class="line"></span><br><span class="line">local response = &#123;&#125;</span><br><span class="line">response.info = info</span><br><span class="line">response.ip = client_ip</span><br><span class="line">response.user_agent = user_agent</span><br><span class="line"></span><br><span class="line">ngx.say(json.encode(response))</span><br></pre></td></tr></table></figure>
+<p>结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost vhosts]# curl -i --data &apos;info=dGVzdA==&apos; http://192.168.102.227:8080/decode_info</span><br><span class="line">HTTP/1.1 200 OK</span><br><span class="line">Server: openresty/1.13.6.1</span><br><span class="line">Date: Fri, 23 Feb 2018 09:44:04 GMT</span><br><span class="line">Content-Type: text/html</span><br><span class="line">Transfer-Encoding: chunked</span><br><span class="line">Connection: keep-alive</span><br><span class="line"></span><br><span class="line">&#123;&quot;info&quot;:&quot;test&quot;,&quot;ip&quot;:&quot;192.168.102.227&quot;,&quot;user_agent&quot;:&quot;curl\/7.29.0&quot;&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="redis"><a href="#redis" class="headerlink" title="redis"></a>redis</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line">local redis = require &quot;resty.redis&quot; --引入redis</span><br><span class="line">local red = redis:new()</span><br><span class="line"></span><br><span class="line">red:set_timeout(1000) --1sec</span><br><span class="line"></span><br><span class="line">--connect to redis</span><br><span class="line">local ok, err = red:connect(&quot;127.0.0.1&quot;, 6379)</span><br><span class="line"></span><br><span class="line">if not ok then</span><br><span class="line">    ngx.say(&quot;fail to connect to redis: &quot;, err)</span><br><span class="line">    ngx.exit(ngx.HTTP_BAD_REQUEST)</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">--set a key dog</span><br><span class="line">ok, err = red:set(&quot;dog&quot;, &quot;an animal&quot;)</span><br><span class="line">if not ok then</span><br><span class="line">    ngx.say(&quot;fail to set dog&quot;, err)</span><br><span class="line">    return</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">ngx.say(&quot;set result: &quot;, ok)</span><br><span class="line"></span><br><span class="line">--get from redis</span><br><span class="line">local res, err = red:get(&quot;dog&quot;)</span><br><span class="line"></span><br><span class="line">if not res then</span><br><span class="line">    ngx.say(&quot;fail to get dog: &quot;, err)</span><br><span class="line">    return</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">if res == null then</span><br><span class="line">    ngx.say(&quot;dog not found&quot;)</span><br><span class="line">    return</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">ngx.say(&quot;dog: &quot;, res)</span><br><span class="line"></span><br><span class="line">red:init_pipeline() --初始化</span><br><span class="line">red:set(&quot;cat&quot;, &quot;Tom&quot;)</span><br><span class="line">red:set(&quot;mouse&quot;, &quot;Jerry&quot;)</span><br><span class="line">red:get(&quot;cat&quot;)</span><br><span class="line">red:get(&quot;mouse&quot;)</span><br><span class="line"></span><br><span class="line">local results, err = red:commit_pipeline()</span><br><span class="line"></span><br><span class="line">if not results then</span><br><span class="line">    ngx.say(&quot;failed to commit pipeline requests: &quot;, err)</span><br><span class="line">    return</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">for i, res in ipairs(results) do</span><br><span class="line">    if type(res) == &quot;table&quot; then</span><br><span class="line">        if res[1] == false then</span><br><span class="line">            ngx.say(&quot;failed to run command&quot;, i, &quot;: &quot;, res[2])</span><br><span class="line">        else</span><br><span class="line">            ngx.say(res[1], &quot;: &quot;, res[2])</span><br><span class="line">        end</span><br><span class="line">    else</span><br><span class="line">        ngx.say(i, &quot;: &quot;, res)</span><br><span class="line">    end</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">-- put it into the connection pool of size 100,</span><br><span class="line">-- with 10 seconds max idle time</span><br><span class="line">local ok, err = red:set_keepalive(10000, 100)</span><br><span class="line">if not ok then</span><br><span class="line">    ngx.say(&quot;failed to set keepalive: &quot;, err)</span><br><span class="line">    return</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">-- or just close the connection right away:</span><br><span class="line">-- local ok, err = red:close()</span><br><span class="line">-- if not ok then</span><br><span class="line">--     ngx.say(&quot;failed to close: &quot;, err)</span><br><span class="line">--     return</span><br><span class="line">-- end</span><br></pre></td></tr></table></figure>
+<p>结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost vhosts]# curl http://192.168.102.227:8080/redis</span><br><span class="line">set result: OK</span><br><span class="line">dog: an animal</span><br><span class="line">1: OK  #set</span><br><span class="line">2: OK  #set</span><br><span class="line">3: Tom</span><br><span class="line">4: Jerry</span><br></pre></td></tr></table></figure>
+<h3 id="cache"><a href="#cache" class="headerlink" title="cache"></a>cache</h3><p>待补充。。。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/nginx/" rel="tag"># nginx</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/02/23/lua入门/" rel="next" title="lua入门">
+                <i class="fa fa-chevron-left"></i> lua入门
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://avatars2.githubusercontent.com/u/18111540?s=400&u=f18c27e63f3c0f54945568af80b368bb962826bc&v=4"
+                alt="木木" />
+            
+              <p class="site-author-name" itemprop="name">木木</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#安装"><span class="nav-number">1.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#准备"><span class="nav-number">2.</span> <span class="nav-text">准备</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#hello-world"><span class="nav-number">3.</span> <span class="nav-text">hello world</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#获取get参数"><span class="nav-number">4.</span> <span class="nav-text">获取get参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#返回json数据"><span class="nav-number">5.</span> <span class="nav-text">返回json数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#redis"><span class="nav-number">6.</span> <span class="nav-text">redis</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#cache"><span class="nav-number">7.</span> <span class="nav-text">cache</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">木木</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+
+
+
+  
+  
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/three-waves.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/three/canvas_lines.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

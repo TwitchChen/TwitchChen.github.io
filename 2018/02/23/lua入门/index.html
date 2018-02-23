@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="k8s," />
+  <meta name="keywords" content="lua," />
 
 
 
@@ -81,20 +81,18 @@
 
 
 
-<meta name="description" content="flannel安装注意完成flannel安装后，安装参考 flannel安装 在启动docker前，需要将flannel的网关绑定到docker启动参数上  启动flannel 查看flannel分配的网络参数12345#cat /run/flannel/subnet.env FLANNEL_NETWORK=172.30.0.0/16FLANNEL_SUBNET=172.30.45.1/24FLA">
-<meta name="keywords" content="k8s">
+<meta name="description" content="下载安装1234$ wget http://www.lua.org/ftp/lua-5.2.3.tar.gz$ tar zxf lua-5.2.3.tar.gz$ cd lua-5.2.3$ make linux test 基本语法 数据类型 | 数据类型     | 描述                                       || ——– | —————————————-">
+<meta name="keywords" content="lua">
 <meta property="og:type" content="article">
-<meta property="og:title" content="flannel安装注意点">
-<meta property="og:url" content="http://twitchf.xyz/2018/01/27/flannel安装注意点/index.html">
+<meta property="og:title" content="lua入门">
+<meta property="og:url" content="http://twitchf.xyz/2018/02/23/lua入门/index.html">
 <meta property="og:site_name" content="Twitch&#39;s Blog">
-<meta property="og:description" content="flannel安装注意完成flannel安装后，安装参考 flannel安装 在启动docker前，需要将flannel的网关绑定到docker启动参数上  启动flannel 查看flannel分配的网络参数12345#cat /run/flannel/subnet.env FLANNEL_NETWORK=172.30.0.0/16FLANNEL_SUBNET=172.30.45.1/24FLA">
+<meta property="og:description" content="下载安装1234$ wget http://www.lua.org/ftp/lua-5.2.3.tar.gz$ tar zxf lua-5.2.3.tar.gz$ cd lua-5.2.3$ make linux test 基本语法 数据类型 | 数据类型     | 描述                                       || ——– | —————————————-">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://twitchf.xyz/images/upload/flannel.png">
-<meta property="og:updated_time" content="2018-01-27T05:54:02.626Z">
+<meta property="og:updated_time" content="2018-02-23T09:10:24.345Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="flannel安装注意点">
-<meta name="twitter:description" content="flannel安装注意完成flannel安装后，安装参考 flannel安装 在启动docker前，需要将flannel的网关绑定到docker启动参数上  启动flannel 查看flannel分配的网络参数12345#cat /run/flannel/subnet.env FLANNEL_NETWORK=172.30.0.0/16FLANNEL_SUBNET=172.30.45.1/24FLA">
-<meta name="twitter:image" content="http://twitchf.xyz/images/upload/flannel.png">
+<meta name="twitter:title" content="lua入门">
+<meta name="twitter:description" content="下载安装1234$ wget http://www.lua.org/ftp/lua-5.2.3.tar.gz$ tar zxf lua-5.2.3.tar.gz$ cd lua-5.2.3$ make linux test 基本语法 数据类型 | 数据类型     | 描述                                       || ——– | —————————————-">
 
 
 
@@ -124,13 +122,13 @@
 
 
 
-  <link rel="canonical" href="http://twitchf.xyz/2018/01/27/flannel安装注意点/"/>
+  <link rel="canonical" href="http://twitchf.xyz/2018/02/23/lua入门/"/>
 
 
 
 
 
-  <title>flannel安装注意点 | Twitch's Blog</title>
+  <title>lua入门 | Twitch's Blog</title>
   
 
 
@@ -286,7 +284,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://twitchf.xyz/2018/01/27/flannel安装注意点/">
+    <link itemprop="mainEntityOfPage" href="http://twitchf.xyz/2018/02/23/lua入门/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="木木">
@@ -303,7 +301,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">flannel安装注意点</h1>
+          <h1 class="post-title" itemprop="name headline">lua入门</h1>
         
 
         <div class="post-meta">
@@ -315,8 +313,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-27T13:41:47+08:00">
-                2018-01-27
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-23T17:08:16+08:00">
+                2018-02-23
               </time>
             
 
@@ -338,8 +336,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/docker/" itemprop="url" rel="index">
-                    <span itemprop="name">docker</span>
+                  <a href="/categories/linux/" itemprop="url" rel="index">
+                    <span itemprop="name">linux</span>
                   </a>
                 </span>
 
@@ -375,26 +373,23 @@
       
 
       
-        <h3 id="flannel安装注意"><a href="#flannel安装注意" class="headerlink" title="flannel安装注意"></a>flannel安装注意</h3><p>完成flannel安装后，安装参考 <a href="https://k8s-install.opsnull.com/05-%E9%83%A8%E7%BD%B2Flannel%E7%BD%91%E7%BB%9C.html" target="_blank" rel="noopener">flannel安装</a></p>
-<p>在启动docker前，需要将flannel的网关绑定到docker启动参数上</p>
-<ul>
-<li>启动flannel</li>
-<li>查看flannel分配的网络参数<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#cat /run/flannel/subnet.env </span><br><span class="line">FLANNEL_NETWORK=172.30.0.0/16</span><br><span class="line">FLANNEL_SUBNET=172.30.45.1/24</span><br><span class="line">FLANNEL_MTU=1450</span><br><span class="line">FLANNEL_IPMASQ=false</span><br></pre></td></tr></table></figure>
+        <h1 id="下载安装"><a href="#下载安装" class="headerlink" title="下载安装"></a>下载安装</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ wget http://www.lua.org/ftp/lua-5.2.3.tar.gz</span><br><span class="line">$ tar zxf lua-5.2.3.tar.gz</span><br><span class="line">$ cd lua-5.2.3</span><br><span class="line">$ make linux test</span><br></pre></td></tr></table></figure>
+<h1 id="基本语法"><a href="#基本语法" class="headerlink" title="基本语法"></a>基本语法</h1><ul>
+<li><p>数据类型</p>
+<p>| 数据类型     | 描述                                       |<br>| ——– | —————————————- |<br>| nil      | 这个最简单，只有值nil属于该类，表示一个无效值（在条件表达式中相当于false）。 |<br>| boolean  | 包含两个值：false和true。                        |<br>| number   | 表示双精度类型的实浮点数                             |<br>| string   | 字符串由一对双引号或单引号来表示                         |<br>| function | 由 C 或 Lua 编写的函数                          |<br>| userdata | 表示任意存储在变量中的C数据结构                         |<br>| thread   | 表示执行的独立线路，用于执行协同程序                       |<br>| table    | Lua 中的表（table）其实是一个”关联数组”（associativearrays），数组的索引可以是数字或者是字符串。在Lua里，table的创建是通过”构造表达式”来完成，最简单构造表达式是{}，用来创建一个空表。 |</p>
 </li>
 </ul>
 <a id="more"></a>
+<h1 id="变量"><a href="#变量" class="headerlink" title="变量"></a>变量</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">a = 1 --全局</span><br><span class="line">local b = 2 --局部</span><br><span class="line"></span><br><span class="line">function func1()</span><br><span class="line">    c = 3</span><br><span class="line">    local d = 4</span><br><span class="line">    local e = 5</span><br><span class="line">    print(e)</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line">func1()</span><br><span class="line"></span><br><span class="line">print(a)</span><br><span class="line">print(b)</span><br><span class="line">print(c)</span><br><span class="line">print(d)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">输出：</span><br><span class="line">5</span><br><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">nil</span><br></pre></td></tr></table></figure>
 <ul>
-<li><p>创建Docker运行参数</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">使用flannel提供的脚本将subnet.env转写成Docker启动参数，创建好的启动参数位于/run/docker_opts.env文件中。</span><br><span class="line">#mk-docker-opts.sh -d /run/docker_opts.env -c</span><br><span class="line">#vim /lib/systemd/system/docker.service</span><br><span class="line">  ExecStart=/usr/bin/dockerd $DOCKER_OPTS</span><br><span class="line">  # 指定这些启动参数所在的文件位置(这个配置是新增的，同样放在Service标签下)</span><br><span class="line">  EnvironmentFile=/run/docker_opts.env</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>重启docker</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#systemctl daemon-reload</span><br><span class="line">#systemctl restart docker</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>查看网络</p>
+<li>table<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">local corp = &#123;</span><br><span class="line">    web = &quot;www.google.com&quot;,   --索引为字符串，key = &quot;web&quot;,</span><br><span class="line">                              --            value = &quot;www.google.com&quot;</span><br><span class="line">    telephone = &quot;12345678&quot;,   --索引为字符串</span><br><span class="line">    staff = &#123;&quot;Jack&quot;, &quot;Scott&quot;, &quot;Gary&quot;&#125;, --索引为字符串，值也是一个表</span><br><span class="line">    100876,              --相当于 [1] = 100876，此时索引为数字</span><br><span class="line">                         --      key = 1, value = 100876</span><br><span class="line">    100191,              --相当于 [2] = 100191，此时索引为数字</span><br><span class="line">    [10] = 360,          --直接把数字索引给出</span><br><span class="line">    [&quot;city&quot;] = &quot;Beijing&quot; --索引为字符串</span><br><span class="line">&#125;</span><br><span class="line">print(corp.web)           #www.google.com</span><br><span class="line">print(corp.telephone)       #12345678</span><br><span class="line">print(corp[&apos;telephone&apos;])      #12345678</span><br><span class="line">print(corp[&apos;staff&apos;])         #table: 0x4130dec8</span><br><span class="line">print(corp.staff[1])  #jack</span><br><span class="line">print(corp[10])          #360</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
-<p><img src="http://twitchf.xyz/images/upload/flannel.png" alt="网络"></p>
-
+<h3 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h3><ul>
+<li>定义<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">function function_name(args)</span><br><span class="line">   someting</span><br><span class="line">end</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">function_name = function(args)</span><br><span class="line">    something</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="待补充。。。"><a href="#待补充。。。" class="headerlink" title="待补充。。。"></a>待补充。。。</h3>
       
     </div>
     
@@ -411,7 +406,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/k8s/" rel="tag"># k8s</a>
+            <a href="/tags/lua/" rel="tag"># lua</a>
           
         </div>
       
@@ -424,8 +419,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/01/25/ansible的一点点记录/" rel="next" title="ansible的一点点记录">
-                <i class="fa fa-chevron-left"></i> ansible的一点点记录
+              <a href="/2018/02/23/nginx入门/" rel="next" title="nginx入门">
+                <i class="fa fa-chevron-left"></i> nginx入门
               </a>
             
           </div>
@@ -434,8 +429,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2018/01/29/kafka集群搭建记录/" rel="prev" title="kafka集群搭建记录">
-                kafka集群搭建记录 <i class="fa fa-chevron-right"></i>
+              <a href="/2018/02/23/openresty入门/" rel="prev" title="openresty入门">
+                openresty入门 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -579,7 +574,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#flannel安装注意"><span class="nav-number">1.</span> <span class="nav-text">flannel安装注意</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#下载安装"><span class="nav-number">1.</span> <span class="nav-text">下载安装</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#基本语法"><span class="nav-number">2.</span> <span class="nav-text">基本语法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#变量"><span class="nav-number">3.</span> <span class="nav-text">变量</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#函数"><span class="nav-number">3.0.1.</span> <span class="nav-text">函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#待补充。。。"><span class="nav-number">3.0.2.</span> <span class="nav-text">待补充。。。</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>
